@@ -26,7 +26,7 @@ def find_matching_plugin(
 
 
 async def load(
-    identifier: str,
+    identifier: str, *,
     config: typing.Dict[str, typing.Any]={},
 ) -> configuration.Configuration:
 
@@ -39,12 +39,10 @@ async def load(
     loader_result = await loader.load(identifier)
     content = await formatter.deserialize(loader_result.content)
 
-    state = {
-        'identifier': identifier,
-        'source': loader_result.source,
-        'loader': loader,
-        'formatter': formatter,
-        'configuration': content,
-    }
-
-    return configuration.Configuration(state)
+    return configuration.Configuration(
+        content,
+        identifier=identifier,
+        source=loader_result.source,
+        loader=loader,
+        formatter=formatter,
+    )

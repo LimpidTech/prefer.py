@@ -17,7 +17,13 @@ def test_get_bin_path_gets_path_to_program_from_argv():
 
 
 def test_get_bin_name_gets_name_of_program_from_argv():
-    bin_name = sys.argv[0][sys.argv[0].rindex(os.sep) + 1:]
+    bin_name = sys.argv[0]
+
+    try:
+        bin_name = bin_name[sys.argv[0].rindex(os.sep) + 1:]
+    except ValueError:
+        pass
+
     assert pathing.get_bin_name() == bin_name
 
 
@@ -28,7 +34,7 @@ def test_etc_path_appends_etc_to_input():
 def test_path_generation_for_posix():
     default_config_path = get_default_config_path()
 
-    assert pathing.get_system_paths('posix') == [
+    expectation = [
         pathing.etc_path(os.getcwd()),
         os.getcwd(),
         default_config_path,
@@ -38,8 +44,9 @@ def test_path_generation_for_posix():
         '/usr/local/etc',
         '/usr/etc',
         '/etc',
-        pathing.get_bin_path(),
     ]
+
+    assert pathing.get_system_paths('posix') == expectation
 
 
 def test_path_generation_uses_xdg_config_path():

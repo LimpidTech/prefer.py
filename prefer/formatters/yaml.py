@@ -1,8 +1,10 @@
 import typing
 import yaml
 
+from prefer.formatters import formatter
 
-class YAMLFormatter(object):
+
+class YAMLFormatter(formatter.Formatter):
     @staticmethod
     def provides(identifier: str):
         return identifier.endswith('.yml') or identifier.endswith('.yaml')

@@ -1,26 +1,59 @@
 import collections
 import os
+import typing
 import urllib
 
-LoaderResult = collections.namedtuple('LoaderResult', [
+from prefer import configuration
+from prefer.loaders import loader
+
+LoadResult = collections.namedtuple('LoadResult', [
     'source',
     'content',
 ])
 
 
-class FileLoader(object):
+class FileLoader(loader.Loader):
     @staticmethod
     def provides(identifier: str):
         parsed = urllib.parse.urlparse(identifier)
         return not parsed.scheme or parsed.scheme == 'file'
 
-    async def load(self, identifier: str):
-        source_identifier = os.path.abspath(identifier)
+    async def locate(self, identifier: str):
+        """ Search paths for a file matching the provided identifier. """
 
-        with open(source_identifier, 'r') as source:
+        # TODO: Async this!
+
+        file_paths = []
+
+        for path in self.paths:
+            if not os.path.exists(path):
+                continue
+
+            identifier_path = os.path.join(path, identifier)
+
+            if os.path.exists(identifier_path):
+                # Exact match always wins
+                file_paths = [identifier_path]
+                break
+
+            for name in os.listdir(path):
+                match_path = os.path.join(path, name)
+                if match_path.startswith(identifier_path):
+                    file_paths.append(match_path)
+
+        return file_paths
+
+    async def load(self, identifier: str):
+        """ Load content from a configuration. """
+
+        paths = await self.locate(identifier)
+
+        if not paths:
+            return None
+
+        path = paths[0]
+
+        with open(path, 'r') as source:
             content = source.read()
 
-        return LoaderResult(
-            source=source_identifier,
-            content=content,
-        )
+        return LoadResult(source=path, content=content)

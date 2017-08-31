@@ -1,8 +1,10 @@
 import typing
 import json
 
+from prefer.formatters import formatter
 
-class JSONFormatter(object):
+
+class JSONFormatter(formatter.Formatter):
     @staticmethod
     def provides(identifier: str):
         return identifier.endswith('.json')

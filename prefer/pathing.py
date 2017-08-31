@@ -82,7 +82,8 @@ def get_base_paths():
 
 def ensure_unique(paths: typing.List[str]):
     results = []
-    found_paths = set()
+
+    found_paths: typing.Set[str] = set()
 
     for path in paths:
         if not path or path in found_paths:
@@ -94,7 +95,7 @@ def ensure_unique(paths: typing.List[str]):
     return results
 
 
-def get_system_paths(system: str = os.name):
+def get_system_paths(system: str=os.name):
     paths = get_base_paths()
     path_factory = SYSTEM_PATH_FACTORIES.get(os.name)
 
@@ -102,5 +103,4 @@ def get_system_paths(system: str = os.name):
         paths += path_factory()
 
     paths.append(get_bin_path())
-
     return ensure_unique(paths + path_factory())

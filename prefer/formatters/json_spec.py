@@ -10,6 +10,18 @@ formatter = json.JSONFormatter()
 
 
 @pytest.mark.asyncio
+async def test_json_native_formatter_provides_expected_file_extensions():
+    assert json.JSONFormatter.provides('test.json') is True
+
+
+@pytest.mark.asyncio
+async def test_json_native_formatter_does_not_provide_unexpected_file_extensions(
+):
+    assert json.JSONFormatter.provides('test.bmp') is False
+    assert json.JSONFormatter.provides('test.jpeg') is False
+
+
+@pytest.mark.asyncio
 async def test_json_formatter_serializes_to_json():
     assert JSON_DATA == await formatter.serialize(REAL_DATA)
 

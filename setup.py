@@ -10,6 +10,7 @@ setuptools.setup(
         'xmljson',
     ],
     tests_require=[
+        'mypy',
         'pytest',
         'pytest-asyncio',
         'pytest-cov',
