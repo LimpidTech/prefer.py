@@ -1,0 +1,14 @@
+# Packaging artifacts
+/dist/*
+*.egg-info
+
+
+# Caching artifacts
+*.pyc
+*.pyo
+*.pyb
+
+
+# Non-git hidden file patterns
+.*
+!.git*
