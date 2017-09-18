@@ -29,3 +29,11 @@ jobs:
       - run:
           name: Execute Unit Tests
           command: bin/python setup.py test
+
+      - run:
+          name: Install Coveralls
+          command: bin/pip install coveralls
+
+      - run:
+          name: Upload Coverage Report
+          command: bin/coveralls
