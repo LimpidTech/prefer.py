@@ -1,4 +1,4 @@
-What is it? [![CircleCI](https://img.shields.io/circleci/project/github/LimpidTech/prefer.py.svg?style=flat-squared)](https://circleci.com/gh/LimpidTech/prefer.py) [![Coveralls](https://img.shields.io/coveralls/LimpidTech/prefer.py.svg?style=flat-sqared)](https://coveralls.io/github/LimpidTech/prefer.js)
+What is it? [![CircleCI](https://img.shields.io/circleci/project/github/LimpidTech/prefer.py.svg?style=flat-squared)](https://circleci.com/gh/LimpidTech/prefer.py) [![Coveralls](https://img.shields.io/coveralls/LimpidTech/prefer.py.svg?style=flat-sqared)](https://coveralls.io/github/LimpidTech/prefer.py)
 -----------
 
 Prefer is a library for helping you manage application configurations while
