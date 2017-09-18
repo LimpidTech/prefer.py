@@ -7,8 +7,12 @@
 *.pyc
 *.pyo
 *.pyb
+__pycache__
 
 
 # Non-git hidden file patterns
 .*
 !.git*
+
+# Allow CircleCI configuration
+!.circleci

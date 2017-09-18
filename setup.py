@@ -3,18 +3,29 @@
 import setuptools
 import sys
 
+TEST_COMMANDS = {'pytest', 'test', 'ptr'}
+
+
+def is_running_tests():
+    return TEST_COMMANDS.intersection(sys.argv)
+
+
+dependencies = [
+    'PyYAML',
+    'xmljson',
+]
+
+if is_running_tests:
+    dependencies.append('pytest-runner')
+
 setuptools.setup(
     name='prefer',
-    setup_requires=[
-        'PyYAML',
-        'xmljson',
-    ],
+    setup_requires=dependencies,
     tests_require=[
         'mypy',
         'pytest',
         'pytest-asyncio',
         'pytest-cov',
-        'pytest-runner',
         'pytest-watch',
     ],
 )
