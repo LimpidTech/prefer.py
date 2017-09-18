@@ -4,4 +4,4 @@ prefer
 Python implementation for Prefer.
 
 
-[![CircleCI](https://circleci.com/gh/LimpidTech/prefer.py.svg?style=svg)](https://circleci.com/gh/LimpidTech/prefer.py)
+[![CircleCI](https://img.shields.io/circleci/project/github/LimpidTech/prefer.py?style=flat-squared)](https://circleci.com/gh/LimpidTech/prefer.py)
