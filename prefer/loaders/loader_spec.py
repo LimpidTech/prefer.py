@@ -1,5 +1,4 @@
 import types
-import functools
 import pytest
 
 from prefer.loaders import loader

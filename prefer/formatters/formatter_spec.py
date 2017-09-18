@@ -1,4 +1,3 @@
-import functools
 import pytest
 
 from prefer.formatters import formatter
