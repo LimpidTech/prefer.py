@@ -4,7 +4,23 @@ import unittest
 
 from prefer import pathing
 
+MOCK_BIN_NAME = 'Mock Bin Name'
+
 os.environ['XDG_CONFIG_PATH'] = ''
+
+
+def unique(subject):
+    items = set()
+    result = []
+
+    for item in subject:
+        if item in items:
+            continue
+
+        items.add(item)
+        result.append(item)
+
+    return result
 
 
 def get_default_config_path():
@@ -31,20 +47,44 @@ def test_etc_path_appends_etc_to_input():
     assert pathing.etc_path('/usr') == '/usr/etc'
 
 
+def test_path_generation_for_posix(get_bin_name):
+    get_bin_name.return_value = MOCK_BIN_NAME
+
+    expectation = ensure_unique(
+        [
+            pathing.etc_path(os.getcwd()),
+            os.getcwd(),
+            default_config_path,
+            os.path.join(default_config_path, pathing.get_bin_name()),
+            pathing.etc_path(os.environ.get('HOME')),
+            os.environ.get('HOME'),
+            '/usr/local/etc',
+            '/usr/etc',
+            '/etc',
+            pathing.get_bin_path(),
+        ]
+    )
+
+    assert pathing.get_system_paths('posix') == expectation
+
+
 def test_path_generation_for_posix():
     default_config_path = get_default_config_path()
 
-    expectation = [
-        pathing.etc_path(os.getcwd()),
-        os.getcwd(),
-        default_config_path,
-        os.path.join(default_config_path, pathing.get_bin_name()),
-        pathing.etc_path(os.environ.get('HOME')),
-        os.environ.get('HOME'),
-        '/usr/local/etc',
-        '/usr/etc',
-        '/etc',
-    ]
+    expectation = unique(
+        [
+            pathing.etc_path(os.getcwd()),
+            os.getcwd(),
+            default_config_path,
+            os.path.join(default_config_path, pathing.get_bin_name()),
+            pathing.etc_path(os.environ.get('HOME')),
+            os.environ.get('HOME'),
+            '/usr/local/etc',
+            '/usr/etc',
+            '/etc',
+            pathing.get_bin_path(),
+        ]
+    )
 
     assert pathing.get_system_paths('posix') == expectation
 

@@ -22,6 +22,7 @@ setuptools.setup(
     name='prefer',
     setup_requires=dependencies,
     tests_require=[
+        'mock',
         'mypy',
         'pytest',
         'pytest-asyncio',
