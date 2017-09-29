@@ -16,9 +16,13 @@ def import_plugin(identifier: str):
 
 
 def find_matching_plugin(
-        identifier: str,
-        plugin_list: typing.List[str],
+    identifier: str,
+    plugin_list: typing.List[str],
+    defaults: typing.List[str],
 ) -> typing.List[object]:
+
+    if plugin_list is None:
+        plugin_list = defaults
 
     for Kind in map(import_plugin, plugin_list):
         if Kind.provides(identifier):
@@ -30,8 +34,17 @@ async def load(
     config: typing.Dict[str, typing.Any]={},
 ) -> configuration.Configuration:
 
-    Formatter = find_matching_plugin(identifier, formatters.defaults)
-    Loader = find_matching_plugin(identifier, loaders.defaults)
+    Formatter = find_matching_plugin(
+        identifier=identifier,
+        defaults=formatters.defaults,
+        plugin_list=config.get('formatters'),
+    )
+
+    Loader = find_matching_plugin(
+        identifier=identifier,
+        defaults=loaders.defaults,
+        plugin_list=config.get('loaders'),
+    )
 
     formatter = Formatter()
     loader = Loader()
