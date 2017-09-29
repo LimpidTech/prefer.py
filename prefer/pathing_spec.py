@@ -6,7 +6,12 @@ from prefer import pathing
 
 MOCK_BIN_NAME = 'Mock Bin Name'
 
-os.environ['XDG_CONFIG_PATH'] = ''
+
+def home_path(*args):
+    return os.path.join(
+        os.environ.get('HOME'),
+        *args,
+    )
 
 
 def unique(subject):
@@ -47,31 +52,10 @@ def test_etc_path_appends_etc_to_input():
     assert pathing.etc_path('/usr') == '/usr/etc'
 
 
-def test_path_generation_for_posix(get_bin_name):
-    get_bin_name.return_value = MOCK_BIN_NAME
-
-    expectation = ensure_unique(
-        [
-            pathing.etc_path(os.getcwd()),
-            os.getcwd(),
-            default_config_path,
-            os.path.join(default_config_path, pathing.get_bin_name()),
-            pathing.etc_path(os.environ.get('HOME')),
-            os.environ.get('HOME'),
-            '/usr/local/etc',
-            '/usr/etc',
-            '/etc',
-            pathing.get_bin_path(),
-        ]
-    )
-
-    assert pathing.get_system_paths('posix') == expectation
-
-
 def test_path_generation_for_posix():
     default_config_path = get_default_config_path()
 
-    expectation = unique(
+    assert pathing.get_system_paths('posix') == unique(
         [
             pathing.etc_path(os.getcwd()),
             os.getcwd(),
@@ -86,7 +70,39 @@ def test_path_generation_for_posix():
         ]
     )
 
-    assert pathing.get_system_paths('posix') == expectation
+
+def test_path_generation_for_win32():
+    default_config_path = get_default_config_path()
+
+    os.environ.update(
+        {
+            'USERPROFILE': 'USERPROFILE',
+            'LOCALPROFILE': 'LOCALPROFILE',
+            'APPDATA': 'APPDATA',
+            'CommonProgramFiles': 'CommonProgramFiles',
+            'ProgramData': 'ProgramData',
+            'ProgramFiles': 'D:\\Program Files',
+            'ProgramFiles(x86)': 'D:\\Program Files (x86)',
+            'SystemRoot': 'C:\\Windows',
+        }
+    )
+
+    assert pathing.get_system_paths(system='win32') == unique(
+        [
+            pathing.etc_path(os.getcwd()),
+            os.path.join(os.getcwd()),
+            os.path.join('USERPROFILE', pathing.get_bin_name()),
+            os.path.join('LOCALPROFILE', pathing.get_bin_name()),
+            os.path.join('APPDATA', pathing.get_bin_name()),
+            os.path.join('CommonProgramFiles', pathing.get_bin_name()),
+            os.path.join('ProgramData', pathing.get_bin_name()),
+            os.path.join('D:\\Program Files', pathing.get_bin_name()),
+            os.path.join('D:\\Program Files (x86)', pathing.get_bin_name()),
+            os.path.join('C:\\Windows', 'system'),
+            os.path.join('C:\\Windows', 'system32'),
+            pathing.get_bin_path(),
+        ]
+    )
 
 
 def test_path_generation_uses_xdg_config_path():
@@ -95,6 +111,7 @@ def test_path_generation_uses_xdg_config_path():
 
     os.environ['XDG_CONFIG_PATH'] = xdg_config_path
     all_paths = pathing.get_system_paths('posix')
+    os.environ['XDG_CONFIG_PATH'] = ''
 
     assert xdg_config_path in all_paths
     assert default_config_path not in all_paths

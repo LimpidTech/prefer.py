@@ -62,7 +62,6 @@ def get_windows_paths():
                 os.environ.get('ProgramData'),
                 os.environ.get('ProgramFiles'),
                 os.environ.get('ProgramFiles(x86)'),
-                os.environ.get('SystemRoot'),
             )
         )
     ]
