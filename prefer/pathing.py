@@ -51,18 +51,19 @@ def get_posix_paths():
 
 
 def get_windows_paths():
-    user_paths = map(
-        with_bin_path, [
-            os.environ.get('USERPROFILE'),
-            os.environ.get('LOCALPROFILE'),
-            os.environ.get('APPDATA'),
-            os.environ.get('CommonProgramFiles'),
-            os.environ.get('ProgramData'),
-            os.environ.get('ProgramFiles'),
-            os.environ.get('ProgramFiles(x86)'),
-            os.environ.get('SystemRoot'),
-        ]
-    )
+    user_paths = [
+        path
+        for path in map(
+            with_bin_path, (
+                os.environ.get('USERPROFILE'), os.environ.get('LOCALPROFILE'),
+                os.environ.get('APPDATA'),
+                os.environ.get('CommonProgramFiles'),
+                os.environ.get('ProgramData'), os.environ.get('ProgramFiles'),
+                os.environ.get('ProgramFiles(x86)'),
+                os.environ.get('SystemRoot'),
+            )
+        )
+    ]
 
     return user_paths + [
         os.path.join(os.environ.get('SystemRoot'), 'system'),
@@ -97,7 +98,7 @@ def ensure_unique(paths: typing.List[str]):
 
 def get_system_paths(system: str=os.name):
     paths = get_base_paths()
-    path_factory = SYSTEM_PATH_FACTORIES.get(os.name)
+    path_factory = SYSTEM_PATH_FACTORIES.get(system)
 
     if path_factory is not None:
         paths += path_factory()
