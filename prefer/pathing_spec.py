@@ -7,13 +7,6 @@ from prefer import pathing
 MOCK_BIN_NAME = 'Mock Bin Name'
 
 
-def home_path(*args):
-    return os.path.join(
-        os.environ.get('HOME'),
-        *args,
-    )
-
-
 def unique(subject):
     items = set()
     result = []
