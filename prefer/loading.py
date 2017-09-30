@@ -50,10 +50,10 @@ async def load(
     loader = Loader()
 
     loader_result = await loader.load(identifier)
-    content = await formatter.deserialize(loader_result.content)
+    context = await formatter.deserialize(loader_result.content)
 
     return configuration.Configuration(
-        content,
+        context=context,
         identifier=identifier,
         source=loader_result.source,
         loader=loader,
