@@ -16,8 +16,8 @@ def get_bin_path():
     return os.path.dirname(os.path.abspath(sys.argv[0]))
 
 
-def etc_path(path):
-    return os.path.join(path, 'etc')
+def etc_path(*path):
+    return os.path.join(*path, 'etc')
 
 
 def with_bin_path(path: str):
@@ -55,10 +55,12 @@ def get_windows_paths():
         path
         for path in map(
             with_bin_path, (
-                os.environ.get('USERPROFILE'), os.environ.get('LOCALPROFILE'),
+                os.environ.get('USERPROFILE'),
+                os.environ.get('LOCALPROFILE'),
                 os.environ.get('APPDATA'),
                 os.environ.get('CommonProgramFiles'),
-                os.environ.get('ProgramData'), os.environ.get('ProgramFiles'),
+                os.environ.get('ProgramData'),
+                os.environ.get('ProgramFiles'),
                 os.environ.get('ProgramFiles(x86)'),
                 os.environ.get('SystemRoot'),
             )
@@ -96,7 +98,7 @@ def ensure_unique(paths: typing.List[str]):
     return results
 
 
-def get_system_paths(system: str=os.name):
+def get_system_paths(system: str = os.name):
     paths = get_base_paths()
     path_factory = SYSTEM_PATH_FACTORIES.get(system)
 
