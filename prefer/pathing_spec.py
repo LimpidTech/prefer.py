@@ -42,7 +42,7 @@ def test_get_bin_name_gets_name_of_program_from_argv():
 
 
 def test_etc_path_appends_etc_to_input():
-    assert pathing.etc_path('/usr') == '/usr/etc'
+    assert pathing.etc_path('/usr') == os.path.join('/usr', 'etc')
 
 
 def test_path_generation_for_posix():

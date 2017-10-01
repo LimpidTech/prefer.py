@@ -1,3 +1,4 @@
+import copy
 import decimal
 import functools
 import operator
@@ -5,6 +6,16 @@ import typing
 
 
 class Configuration(object):
+    @classmethod
+    def using(Kind, data):
+        if data is None:
+            return Kind()
+
+        if isinstance(data, Kind):
+            return data
+            
+        return Kind(context=data)
+
     def __init__(self, *,
         context: typing.Optional[typing.Any]=None, 
         formatter: typing.Optional['prefer.formatter.Formatter']=None,
@@ -16,6 +27,8 @@ class Configuration(object):
             context = {}
 
         self.context = context
+        self.formatter = formatter
+        self.loader = loader
 
     def save(self):
         raise NotImplementedError('save is not yet implemented')

@@ -1,7 +1,8 @@
-import typing
+import collections
 import importlib
+import typing
 
-from prefer import configuration
+from prefer import configuration as configuration_module
 from prefer.formatters import defaults as formatters
 from prefer.loaders import defaults as loaders
 
@@ -17,42 +18,56 @@ def import_plugin(identifier: str):
 
 def find_matching_plugin(
     identifier: str,
-    plugin_list: typing.List[str],
+    plugin_list: typing.Union[typing.List[str], typing.Dict[str, typing.Dict[str, typing.Any]]],
     defaults: typing.List[str],
 ) -> typing.List[object]:
+
+    Plugin = None
+    configuration = None
 
     if plugin_list is None:
         plugin_list = defaults
 
-    for Kind in map(import_plugin, plugin_list):
+    for plugin_identifier in plugin_list:
+        Kind = import_plugin(plugin_identifier)
+
         if Kind.provides(identifier):
-            return Kind
+            Plugin = Kind
+
+            if not isinstance(plugin_list, collections.Sequence):
+                configuration = configuration_module.Configuration.using(
+                    plugin_list[plugin_identifier],
+                )
+
+            break
+
+    return Plugin, configuration
 
 
 async def load(
     identifier: str, *,
-    config: typing.Dict[str, typing.Any]={},
-) -> configuration.Configuration:
+    configuration: typing.Dict[str, typing.Any]={},
+) -> configuration_module.Configuration:
 
-    Formatter = find_matching_plugin(
+    Formatter, formatter_configuration = find_matching_plugin(
         identifier=identifier,
         defaults=formatters.defaults,
-        plugin_list=config.get('formatters'),
+        plugin_list=configuration.get('formatters'),
     )
 
-    Loader = find_matching_plugin(
+    Loader, loader_configuration = find_matching_plugin(
         identifier=identifier,
         defaults=loaders.defaults,
-        plugin_list=config.get('loaders'),
+        plugin_list=configuration.get('loaders'),
     )
 
-    formatter = Formatter()
-    loader = Loader()
+    formatter = Formatter(configuration=formatter_configuration)
+    loader = Loader(configuration=loader_configuration)
 
     loader_result = await loader.load(identifier)
     context = await formatter.deserialize(loader_result.content)
 
-    return configuration.Configuration(
+    return configuration_module.Configuration(
         context=context,
         identifier=identifier,
         source=loader_result.source,

@@ -4,20 +4,25 @@ from prefer import configuration as configuration_module
 from prefer import pathing
 
 
+LoaderConfigurationType = typing.Union[
+    typing.Dict[str, typing.Any],
+    configuration_module.Configuration,
+]
+
+
 class Loader(object):
     def __init__(
         self, *,
         paths: typing.Optional[typing.List[str]]=None,
-        configuration: configuration_module.Configuration=None,
+        configuration: LoaderConfigurationType=None,
     ):
 
-        if configuration is None:
-            configuration = configuration_module.Configuration()
+        
 
         if paths is None:
             paths = pathing.get_system_paths()
 
-        self.configuration = configuration
+        self.configuration = configuration_module.Configuration.using(configuration)
         self.paths = paths
 
     @staticmethod

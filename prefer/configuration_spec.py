@@ -31,10 +31,29 @@ def test_configuration_object_gets_items_from_context():
     assert conf['test'] == 'wat'
 
 
+def test_configuration_object_is_empty_if_using_None():
+    instance = configuration.Configuration.using(None)
+
+    assert instance == {}
+    assert isinstance(instance, configuration.Configuration)
+
+
+def test_configuration_object_can_be_created_via_using():
+    mock_data = {'mock': 'data'}
+    instance = configuration.Configuration.using(mock_data)
+
+    assert instance == mock_data
+    assert isinstance(instance, configuration.Configuration)
+
+
+def test_configuration_using_acts_as_identity_function_when_given_same_type():
+    instance = configuration.Configuration()
+    assert configuration.Configuration.using(instance) is instance
+
+
 def test_configuration_object_supports_equality_testing():
     conf = configuration.Configuration(formatter=None, loader=None)
     match_dict = {'test': 'wat'}
-
     conf['test'] = 'wat'
 
     assert conf == conf

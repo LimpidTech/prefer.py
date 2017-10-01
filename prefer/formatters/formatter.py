@@ -1,4 +1,5 @@
 import typing
+from prefer import configuration
 
 
 def ensure_formatter_defines(method_name: str):
@@ -11,6 +12,9 @@ def ensure_formatter_defines(method_name: str):
 
 
 class Formatter(object):
+    def __init__(self, configuration=configuration.Configuration):
+        self.configuration = configuration
+
     @staticmethod
     def provides(identifier: str):
         return ensure_formatter_defines('provides')
