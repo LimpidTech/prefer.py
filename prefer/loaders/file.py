@@ -1,3 +1,4 @@
+import asyncio
 import collections
 import os
 import typing
@@ -10,6 +11,23 @@ LoadResult = collections.namedtuple('LoadResult', [
     'source',
     'content',
 ])
+
+
+async def read(path, chunk_size=1024):
+    if not os.path.exists(path):
+        return
+
+    # TODO: Don't use open/read, as I'm 99% sure they block.
+    read_socket = open(path, 'r')
+    result = ''
+
+    while True:
+        data = read_socket.read(chunk_size)
+
+        if not data:
+            return result
+
+        result += data
 
 
 class FileLoader(loader.Loader):
@@ -47,13 +65,15 @@ class FileLoader(loader.Loader):
         """ Load content from a configuration. """
 
         paths = await self.locate(identifier)
+        coroutines = [read(path) for path in paths]
 
-        if not paths:
-            return None
+        for index in range(len(coroutines)):
+            content = await coroutines[index]
 
-        path = paths[0]
+            if not content:
+                continue
 
-        with open(path, 'r') as source:
-            content = source.read()
-
-        return LoadResult(source=path, content=content)
+            return LoadResult(
+                source=paths[index],
+                content=content,
+            )
