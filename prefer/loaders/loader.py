@@ -1,6 +1,7 @@
 import typing
 
 from prefer import configuration as configuration_module
+from prefer import events
 from prefer import pathing
 
 
@@ -10,7 +11,7 @@ LoaderConfigurationType = typing.Union[
 ]
 
 
-class Loader(object):
+class Loader(events.Emitter):
     def __init__(
         self, *,
         paths: typing.Optional[typing.List[str]]=None,
