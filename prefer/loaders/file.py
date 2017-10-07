@@ -18,16 +18,18 @@ async def read(path, chunk_size=1024):
         return
 
     # TODO: Don't use open/read, as I'm 99% sure they block.
-    read_socket = open(path, 'r')
+    reader = open(path, 'r')
     result = ''
 
     while True:
-        data = read_socket.read(chunk_size)
+        data = reader.read(chunk_size)
 
         if not data:
-            return result
+            break
 
         result += data
+
+    return result
 
 
 class FileLoader(loader.Loader):
@@ -70,10 +72,8 @@ class FileLoader(loader.Loader):
         for index in range(len(coroutines)):
             content = await coroutines[index]
 
-            if not content:
-                continue
-
-            return LoadResult(
-                source=paths[index],
-                content=content,
-            )
+            if content:
+                return LoadResult(
+                    source=paths[index],
+                    content=content,
+                )

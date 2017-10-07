@@ -71,3 +71,24 @@ def test_configuration_object_deletes_items_from_context():
 def test_configuration_object_checks_context_for_containment():
     context = {'test': 'wat'}
     assert 'test' in configuration.Configuration(context=context)
+
+
+def test_get_returns_item_from_context():
+    context = {'test': 'wat'}
+    assert 'wat' == configuration.Configuration(context=context).get('test')
+
+
+def test_get_returns_nested_item_from_context():
+    context = {'test': {'nested': {'example': 'wat'}}}
+    subject = configuration.Configuration(context=context)
+
+    assert 'wat' == subject.get('test.nested.example')
+
+
+def test_set_updates_a_nested_value_in_the_context():
+    mock_value = {}
+
+    subject = configuration.Configuration()
+    subject.set('test.example', mock_value)
+    print(subject.context)
+    assert mock_value is subject.get('test.example')

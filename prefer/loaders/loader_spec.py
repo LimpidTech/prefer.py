@@ -33,3 +33,11 @@ async def test_Loader_load_raises_NotImplementedError():
         caught_exception = True
 
     assert caught_exception
+
+
+@pytest.mark.asyncio
+async def test_Loader_assigns_paths_based_on_configuration():
+    paths = ['.']
+    configuration = {'paths': paths}
+
+    assert paths == loader.Loader(configuration=configuration).paths

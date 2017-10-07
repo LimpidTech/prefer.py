@@ -14,16 +14,15 @@ LoaderConfigurationType = typing.Union[
 class Loader(events.Emitter):
     def __init__(
         self, *,
-        paths: typing.Optional[typing.List[str]]=None,
         configuration: LoaderConfigurationType=None,
     ):
+        self.configuration = configuration_module.Configuration.using(configuration)
 
-        
+        paths: typing.List[str] = self.configuration.get('paths')
 
         if paths is None:
             paths = pathing.get_system_paths()
 
-        self.configuration = configuration_module.Configuration.using(configuration)
         self.paths = paths
 
     @staticmethod

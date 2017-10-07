@@ -13,7 +13,11 @@ def get_fixture_path(*args):
 
 
 def simple_loader():
-    return file_loader.FileLoader(paths=[get_fixture_path()])
+    return file_loader.FileLoader(
+        configuration={
+            'paths': [get_fixture_path()],
+        },
+    )
 
 
 @pytest.mark.asyncio
@@ -58,5 +62,8 @@ async def test_loader_load_returns_LoadResult_of_file():
 
 @pytest.mark.asyncio
 async def test_loader_load_returns_None_if_nothing_matches():
-    result = await file_loader.FileLoader(paths=[]).load(FIXTURE_IDENTIFIER)
+    result = await file_loader.FileLoader(
+        configuration={'paths': ['.']},
+    ).load(FIXTURE_IDENTIFIER)
+
     assert result is None
