@@ -11,7 +11,7 @@ def ensure_formatter_defines(method_name: str):
     )
 
 
-class Formatter(object):
+class Formatter:
     def __init__(self, configuration=configuration.Configuration):
         self.configuration = configuration
 
