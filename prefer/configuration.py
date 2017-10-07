@@ -4,8 +4,10 @@ import functools
 import operator
 import typing
 
+from prefer import events
 
-class Configuration(object):
+
+class Configuration(events.Emitter):
     @classmethod
     def using(Kind, data):
         if data is None:
