@@ -28,5 +28,6 @@ setuptools.setup(
         'pytest-asyncio',
         'pytest-cov',
         'pytest-watch',
+        'pytest-blockage',
     ],
 )
