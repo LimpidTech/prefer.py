@@ -1,4 +1,6 @@
 __author__ = 'Bailey Stoner <monokrome@monokro.me>'
+__version__ = '0.1.0'
+
 
 import sys
 
