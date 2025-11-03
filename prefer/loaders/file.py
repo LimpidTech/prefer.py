@@ -1,25 +1,26 @@
-import asyncio
 import collections
 import os
 import typing
-import urllib
+import urllib.parse
 
-from prefer import configuration
 from prefer.loaders import loader
 
-LoadResult = collections.namedtuple('LoadResult', [
-    'source',
-    'content',
-])
+LoadResult = collections.namedtuple(
+    "LoadResult",
+    [
+        "source",
+        "content",
+    ],
+)
 
 
-async def read(path, chunk_size=1024):
+async def read(path: str, chunk_size: int = 1024) -> typing.Optional[str]:
     if not os.path.exists(path):
-        return
+        return None
 
     # TODO: Don't use open/read, as I'm 99% sure they block.
-    reader = open(path, 'r')
-    result = ''
+    reader = open(path)
+    result = ""
 
     while True:
         data = reader.read(chunk_size)
@@ -34,16 +35,16 @@ async def read(path, chunk_size=1024):
 
 class FileLoader(loader.Loader):
     @staticmethod
-    def provides(identifier: str):
+    def provides(identifier: str) -> bool:
         parsed = urllib.parse.urlparse(identifier)
-        return not parsed.scheme or parsed.scheme == 'file'
+        return not parsed.scheme or parsed.scheme == "file"
 
-    async def locate(self, identifier: str):
-        """ Search paths for a file matching the provided identifier. """
+    async def locate(self, identifier: str) -> list[str]:
+        """Search paths for a file matching the provided identifier."""
 
         # TODO: Async this!
 
-        file_paths = []
+        file_paths: list[str] = []
 
         for path in self.paths:
             if not os.path.exists(path):
@@ -63,8 +64,8 @@ class FileLoader(loader.Loader):
 
         return file_paths
 
-    async def load(self, identifier: str):
-        """ Load content from a configuration. """
+    async def load(self, identifier: str) -> typing.Optional[LoadResult]:
+        """Load content from a configuration."""
 
         paths = await self.locate(identifier)
         coroutines = [read(path) for path in paths]
@@ -77,3 +78,5 @@ class FileLoader(loader.Loader):
                     source=paths[index],
                     content=content,
                 )
+
+        return None

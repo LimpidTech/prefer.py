@@ -1,3 +1,3 @@
 defaults = [
-    'prefer.loaders.file:FileLoader',
+    "prefer.loaders.file:FileLoader",
 ]

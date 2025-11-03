@@ -1,5 +1,4 @@
-import mock
-import unittest
+from unittest import mock
 
 from prefer import configuration
 
@@ -17,18 +16,18 @@ def test_configuration_object_raises_error_on_save_until_implemented():
 
 def test_configuration_object_supports_context_assignment_via_setitem():
     conf = configuration.Configuration(context=mock.MagicMock())
-    conf['test'] = 'wat'
-    conf.context.__setitem__.assert_called_once_with('test', 'wat')
+    conf["test"] = "wat"
+    conf.context.__setitem__.assert_called_once_with("test", "wat")
 
 
 def test_configuration_object_gets_items_from_context():
     conf = configuration.Configuration(
         loader=None,
         formatter=None,
-        context={'test': 'wat'},
+        context={"test": "wat"},
     )
 
-    assert conf['test'] == 'wat'
+    assert conf["test"] == "wat"
 
 
 def test_configuration_object_is_empty_if_using_None():
@@ -39,7 +38,7 @@ def test_configuration_object_is_empty_if_using_None():
 
 
 def test_configuration_object_can_be_created_via_using():
-    mock_data = {'mock': 'data'}
+    mock_data = {"mock": "data"}
     instance = configuration.Configuration.using(mock_data)
 
     assert instance == mock_data
@@ -53,8 +52,8 @@ def test_configuration_using_acts_as_identity_function_when_given_same_type():
 
 def test_configuration_object_supports_equality_testing():
     conf = configuration.Configuration(formatter=None, loader=None)
-    match_dict = {'test': 'wat'}
-    conf['test'] = 'wat'
+    match_dict = {"test": "wat"}
+    conf["test"] = "wat"
 
     assert conf == conf
     assert conf == match_dict
@@ -62,33 +61,55 @@ def test_configuration_object_supports_equality_testing():
 
 
 def test_configuration_object_deletes_items_from_context():
-    context = {'test': 'wat'}
+    context = {"test": "wat"}
     conf = configuration.Configuration(context=context)
-    del conf['test']
-    assert 'test' not in context
+    del conf["test"]
+    assert "test" not in context
 
 
 def test_configuration_object_checks_context_for_containment():
-    context = {'test': 'wat'}
-    assert 'test' in configuration.Configuration(context=context)
+    context = {"test": "wat"}
+    assert "test" in configuration.Configuration(context=context)
 
 
 def test_get_returns_item_from_context():
-    context = {'test': 'wat'}
-    assert 'wat' == configuration.Configuration(context=context).get('test')
+    context = {"test": "wat"}
+    assert "wat" == configuration.Configuration(context=context).get("test")
 
 
 def test_get_returns_nested_item_from_context():
-    context = {'test': {'nested': {'example': 'wat'}}}
+    context = {"test": {"nested": {"example": "wat"}}}
     subject = configuration.Configuration(context=context)
 
-    assert 'wat' == subject.get('test.nested.example')
+    assert "wat" == subject.get("test.nested.example")
 
 
 def test_set_updates_a_nested_value_in_the_context():
     mock_value = {}
 
     subject = configuration.Configuration()
-    subject.set('test.example', mock_value)
+    subject.set("test.example", mock_value)
     print(subject.context)
-    assert mock_value is subject.get('test.example')
+    assert mock_value is subject.get("test.example")
+
+
+def test_set_updates_a_top_level_value_in_the_context():
+    mock_value = "test_value"
+
+    subject = configuration.Configuration()
+    subject.set("simple_key", mock_value)
+    assert mock_value == subject.get("simple_key")
+
+
+def test_get_returns_none_for_unset_identifier():
+    subject = configuration.Configuration(context={"existing": "value"})
+    result = subject.get("nonexistent")
+    assert result is None
+
+
+def test_get_returns_none_for_unset_nested_identifier():
+    subject = configuration.Configuration(
+        context={"level1": {"level2": "value"}}
+    )
+    result = subject.get("level1.nonexistent")
+    assert result is None

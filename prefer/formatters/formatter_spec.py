@@ -32,7 +32,7 @@ async def test_Formatter_deserialize_raises_NotImplementedError():
     caught_exception = False
 
     try:
-        await formatter.Formatter().deserialize('{}')
+        await formatter.Formatter().deserialize("{}")
     except NotImplementedError:
         caught_exception = True
 

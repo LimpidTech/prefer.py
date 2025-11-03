@@ -1,37 +1,31 @@
 import collections
-import copy
-import decimal
-import functools
-import operator
 import typing
 
 from prefer import events
 
+NODE_SEPARATOR = "."
 
-NODE_SEPARATOR = '.'
 
-
-def split_key_from_identifier(identifier):
+def split_key_from_identifier(identifier: str) -> tuple[str, str]:
     try:
-        index = identifier.rindex('.')
-        key = identifier[index+1:]
+        index = identifier.rindex(".")
+        key = identifier[index + 1 :]
         identifier = identifier[:index]
 
     except ValueError:
         key = identifier
-        identifier = ''
+        identifier = ""
 
     return identifier, key
 
 
-
-def split_by_separator(identifier):
-    current = ''
+def split_by_separator(identifier: str) -> typing.Iterator[str]:
+    current = ""
 
     for character in identifier:
         if current and character == NODE_SEPARATOR:
             yield current
-            current = ''
+            current = ""
             continue
 
         current += character
@@ -39,17 +33,13 @@ def split_by_separator(identifier):
     if current:
         yield current
 
-    raise StopIteration()
-
 
 def get_matching_node(
-    root: str,
+    root: typing.Dict[str, typing.Any],
     identifier: str,
-    assign: typing.Callable[[], typing.Any]=None
-):
-
-    node = root
-    current_identifier = ''
+    assign: typing.Optional[typing.Callable[[], typing.Any]] = None,
+) -> typing.Any:
+    node: typing.Any = root
 
     for key in split_by_separator(identifier):
         print(node, key)
@@ -57,9 +47,7 @@ def get_matching_node(
             node[key] = assign()
 
         if key not in node:
-            raise ValueError('{} is an unset identifier'.format(
-                identifier,
-            ))
+            raise ValueError(f"{identifier} is an unset identifier")
 
         node = node[key]
 
@@ -67,23 +55,36 @@ def get_matching_node(
 
 
 class Configuration(events.Emitter):
+    context: typing.Dict[str, typing.Any]
+    formatter: typing.Optional[typing.Any]
+    loader: typing.Optional[typing.Any]
+
     @classmethod
-    def using(Kind, data):
+    def using(
+        cls,
+        data: typing.Optional[
+            typing.Union["Configuration", typing.Dict[str, typing.Any]]
+        ],
+    ) -> "Configuration":
         if data is None:
-            return Kind()
+            return cls()
 
-        if isinstance(data, Kind):
+        if isinstance(data, cls):
             return data
-            
-        return Kind(context=data)
 
-    def __init__(self, *,
-        context: typing.Optional[typing.Any]=None, 
-        formatter: typing.Optional['prefer.formatter.Formatter']=None,
-        loader: typing.Optional['prefer.loader.Loader']=None,
-        **kwargs: typing.Optional[typing.Dict[str, typing.Any]],
-    ):
+        if isinstance(data, dict):
+            return cls(context=data)
 
+        return cls()
+
+    def __init__(
+        self,
+        *,
+        context: typing.Optional[typing.Dict[str, typing.Any]] = None,
+        formatter: typing.Optional[typing.Any] = None,
+        loader: typing.Optional[typing.Any] = None,
+        **kwargs: typing.Any,
+    ) -> None:
         super().__init__()
 
         if context is None:
@@ -93,13 +94,13 @@ class Configuration(events.Emitter):
         self.formatter = formatter
         self.loader = loader
 
-    def get(self, identifier):
+    def get(self, identifier: str) -> typing.Any:
         try:
             return get_matching_node(self.context, identifier)
         except ValueError:
             return None
 
-    def set(self, identifier, value):
+    def set(self, identifier: str, value: typing.Any) -> typing.Any:
         identifier, key = split_key_from_identifier(identifier)
 
         if identifier:
@@ -115,28 +116,28 @@ class Configuration(events.Emitter):
         previous_value = node.get(key)
         node[key] = value
 
-        self.emit('changed', identifier, value, previous_value)
+        self.emit("changed", identifier, value, previous_value)
         return node.get(key)
 
-    def save(self):
-        raise NotImplementedError('save is not yet implemented')
+    def save(self) -> None:
+        raise NotImplementedError("save is not yet implemented")
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> typing.Any:
         return self.context[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: typing.Any) -> None:
         previous_value = self.context.get(key)
         self.context[key] = value
-        self.emit('changed', key, value, previous_value)
+        self.emit("changed", key, value, previous_value)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str) -> None:
         del self.context[key]
 
-    def __eq__(self, subject):
+    def __eq__(self, subject: object) -> bool:
         if subject is self:
             return True
 
         return subject == self.context
 
-    def __contains__(self, subject):
+    def __contains__(self, subject: str) -> bool:
         return subject in self.context

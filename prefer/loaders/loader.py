@@ -1,9 +1,7 @@
 import typing
 
 from prefer import configuration as configuration_module
-from prefer import events
-from prefer import pathing
-
+from prefer import events, pathing
 
 LoaderConfigurationType = typing.Union[
     typing.Dict[str, typing.Any],
@@ -12,13 +10,19 @@ LoaderConfigurationType = typing.Union[
 
 
 class Loader(events.Emitter):
-    def __init__(
-        self, *,
-        configuration: LoaderConfigurationType=None,
-    ):
-        self.configuration = configuration_module.Configuration.using(configuration)
+    configuration: configuration_module.Configuration
+    paths: list[str]
 
-        paths: typing.List[str] = self.configuration.get('paths')
+    def __init__(
+        self,
+        *,
+        configuration: typing.Optional[LoaderConfigurationType] = None,
+    ) -> None:
+        self.configuration = configuration_module.Configuration.using(
+            configuration
+        )
+
+        paths: typing.Optional[list[str]] = self.configuration.get("paths")
 
         if paths is None:
             paths = pathing.get_system_paths()
@@ -26,15 +30,15 @@ class Loader(events.Emitter):
         self.paths = paths
 
     @staticmethod
-    def provides(identifier: str):
+    def provides(identifier: str) -> bool:
         raise NotImplementedError(
             'Loader objects must implement a static "provides" method.',
         )
 
-    async def locate(self, identifier: str):
+    async def locate(self, identifier: str) -> typing.Any:
         return identifier
 
-    async def load(self, identifier: str):
+    async def load(self, identifier: str) -> typing.Any:
         raise NotImplementedError(
             'Loader objects must implement a "load" method.',
         )

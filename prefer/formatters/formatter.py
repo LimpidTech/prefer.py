@@ -1,26 +1,28 @@
 import typing
-from prefer import configuration
+
+if typing.TYPE_CHECKING:
+    pass
 
 
-def ensure_formatter_defines(method_name: str):
+def ensure_formatter_defines(method_name: str) -> typing.NoReturn:
     raise NotImplementedError(
-        (
-            'Object must define a "{method_name}" attribute, but it '
-            'does not exist.'
-        ).format(method_name=method_name)
+        f'Object must define a "{method_name}" attribute, but it '
+        "does not exist."
     )
 
 
 class Formatter:
-    def __init__(self, configuration=configuration.Configuration):
-        self.configuration = configuration
+    def __init__(
+        self, configuration: typing.Optional[typing.Any] = None
+    ) -> None:
+        self.configuration: typing.Optional[typing.Any] = configuration
 
     @staticmethod
-    def provides(identifier: str):
-        return ensure_formatter_defines('provides')
+    def provides(identifier: str) -> bool:
+        ensure_formatter_defines("provides")
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
-        return ensure_formatter_defines('serialize')
+        ensure_formatter_defines("serialize")
 
     async def deserialize(self, source: str) -> typing.Dict[str, typing.Any]:
-        return ensure_formatter_defines('deserialize')
+        ensure_formatter_defines("deserialize")

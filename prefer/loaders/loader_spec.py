@@ -1,9 +1,8 @@
-import types
 import pytest
 
 from prefer.loaders import loader
 
-MOCK_IDENTIFIER = 'Mock Identifier'
+MOCK_IDENTIFIER = "Mock Identifier"
 
 
 @pytest.mark.asyncio
@@ -11,7 +10,7 @@ async def test_Loader_provides_raises_NotImplementedError():
     caught_exception = False
 
     try:
-        loader.Loader().provides('config')
+        loader.Loader().provides("config")
     except NotImplementedError:
         caught_exception = True
 
@@ -28,7 +27,7 @@ async def test_Loader_load_raises_NotImplementedError():
     caught_exception = False
 
     try:
-        await loader.Loader().load('config')
+        await loader.Loader().load("config")
     except NotImplementedError:
         caught_exception = True
 
@@ -37,7 +36,7 @@ async def test_Loader_load_raises_NotImplementedError():
 
 @pytest.mark.asyncio
 async def test_Loader_assigns_paths_based_on_configuration():
-    paths = ['.']
-    configuration = {'paths': paths}
+    paths = ["."]
+    configuration = {"paths": paths}
 
     assert paths == loader.Loader(configuration=configuration).paths
