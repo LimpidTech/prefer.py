@@ -72,9 +72,9 @@ def test_path_generation_for_posix():
                             os.path.join(default_config_path, mock_bin_name),
                             pathing.etc_path(mock_home),
                             mock_home,
-                            "/usr/local/etc",
-                            "/usr/etc",
-                            "/etc",
+                            pathing.etc_path("/usr/local"),
+                            pathing.etc_path("/usr"),
+                            pathing.etc_path("/"),
                             mock_bin_path,
                         ]
                     )
