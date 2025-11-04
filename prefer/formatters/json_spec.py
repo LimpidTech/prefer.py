@@ -13,6 +13,7 @@ formatter = json.JSONFormatter()
 @pytest.mark.asyncio
 async def test_json_native_formatter_provides_expected_file_extensions():
     assert json.JSONFormatter.provides("test.json") is True
+    assert json.JSONFormatter.provides("test.json5") is True
 
 
 @pytest.mark.asyncio

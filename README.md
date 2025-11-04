@@ -62,8 +62,10 @@ Along with being fully configurable to support any arbitrary data source you'd
 like, the following types of data can immediately be used as configuration formats
 upon installation of prefer:
 
-- JSON
+- JSON (with comments)
 - YAML
+- TOML
+- INI
 
 
 Why asyncronous?

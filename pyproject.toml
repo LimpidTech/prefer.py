@@ -26,6 +26,7 @@ classifiers = [
 dependencies = [
     "PyYAML>=5.1",
     "xmljson>=0.2.0",
+    "json5>=0.9.0",
 ]
 
 [project.optional-dependencies]
@@ -67,6 +68,10 @@ exclude = [
     ".*_spec\\.py$",
 ]
 
+[[tool.mypy.overrides]]
+module = "xmljson"
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 79
 target-version = "py38"
@@ -84,15 +89,7 @@ source = ["prefer"]
 omit = ["*/tests/*", "*/__pycache__/*", "*_spec.py"]
 
 [tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if typing.TYPE_CHECKING:",
-]
-fail_under = 99
+fail_under = 100
 show_missing = true
 
 [tool.coverage.html]

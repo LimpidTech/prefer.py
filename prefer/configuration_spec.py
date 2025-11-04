@@ -113,3 +113,8 @@ def test_get_returns_none_for_unset_nested_identifier():
     )
     result = subject.get("level1.nonexistent")
     assert result is None
+
+
+def test_configuration_using_with_invalid_type_returns_empty():
+    result = configuration.Configuration.using("invalid_string")
+    assert result.context == {}
