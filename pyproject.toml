@@ -78,7 +78,7 @@ target-version = "py38"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP"]
-ignore = []
+ignore = ["UP006", "UP007", "UP037", "UP045"]
 
 [tool.ruff.lint.per-file-ignores]
 "*_spec.py" = ["N802", "E501"]  # Allow test function names with uppercase and long lines

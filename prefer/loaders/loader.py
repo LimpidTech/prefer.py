@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 
 from prefer import configuration as configuration_module
