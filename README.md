@@ -1,4 +1,4 @@
-What is it? [![CircleCI](https://img.shields.io/circleci/project/github/LimpidTech/prefer.py.svg?style=flat-squared)](https://circleci.com/gh/LimpidTech/prefer.py) [![Coveralls](https://img.shields.io/coveralls/LimpidTech/prefer.py.svg?style=flat-sqared)](https://coveralls.io/github/LimpidTech/prefer.py)
+What is it? [![CI](https://github.com/LimpidTech/prefer.py/workflows/CI/badge.svg)](https://github.com/LimpidTech/prefer.py/actions) [![codecov](https://codecov.io/gh/LimpidTech/prefer.py/branch/master/graph/badge.svg)](https://codecov.io/gh/LimpidTech/prefer.py)
 -----------
 
 Prefer is a library for helping you manage application configurations while
@@ -62,10 +62,10 @@ Along with being fully configurable to support any arbitrary data source you'd
 like, the following types of data can immediately be used as configuration formats
 upon installation of prefer:
 
-- JSON (with comments)
+- JSON / JSON5 (with comments, trailing commas, unquoted keys)
 - YAML
-- TOML
-- INI
+- INI / CFG
+- XML
 
 
 Why asyncronous?
@@ -81,6 +81,4 @@ those actions are blocking.
 
 
 
-[cov]: http://monokro.me/projects/prefer/coverage.html
-[bs]: https://travis-ci.org/LimpidTech/prefer.png?branch=master "Build Status"
-[j5]: http://json5.org/ "json5 - JSON for the ES5 era"
+
