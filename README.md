@@ -1,4 +1,4 @@
-What is it? [![CI](https://github.com/LimpidTech/prefer.py/workflows/CI/badge.svg)](https://github.com/LimpidTech/prefer.py/actions) [![codecov](https://codecov.io/gh/LimpidTech/prefer.py/branch/master/graph/badge.svg)](https://codecov.io/gh/LimpidTech/prefer.py)
+What is it? [![CI](https://github.com/LimpidTech/prefer.py/workflows/CI/badge.svg)](https://github.com/LimpidTech/prefer.py/actions) [![codecov](https://codecov.io/gh/LimpidTech/prefer.py/branch/main/graph/badge.svg)](https://codecov.io/gh/LimpidTech/prefer.py)
 -----------
 
 Prefer is a library for helping you manage application configurations while
