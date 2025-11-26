@@ -23,6 +23,11 @@ async def test_json_native_formatter_does_not_provide_unexpected_file_extensions
 
 
 @pytest.mark.asyncio
+async def test_json_formatter_extensions():
+    assert json.JSONFormatter.extensions() == {".json", ".json5"}
+
+
+@pytest.mark.asyncio
 async def test_json_formatter_serializes_to_json():
     assert JSON_DATA == await formatter.serialize(REAL_DATA)
 

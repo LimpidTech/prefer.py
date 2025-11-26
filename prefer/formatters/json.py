@@ -7,8 +7,8 @@ from prefer.formatters import formatter
 
 class JSONFormatter(formatter.Formatter):
     @staticmethod
-    def provides(identifier: str) -> bool:
-        return identifier.endswith(".json") or identifier.endswith(".json5")
+    def extensions() -> set[str]:
+        return {".json", ".json5"}
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
         result: str = json5.dumps(source, quote_keys=True)

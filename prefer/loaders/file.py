@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import collections
+import importlib
 import os
 import typing
 import urllib.parse
 
+from prefer.formatters import defaults as formatters
 from prefer.loaders import loader
 
 LoadResult = collections.namedtuple(
@@ -16,23 +18,30 @@ LoadResult = collections.namedtuple(
 )
 
 
-async def read(path: str, chunk_size: int = 1024) -> typing.Optional[str]:
+def import_plugin(identifier: str) -> typing.Any:
+    module_name, object_type = identifier.split(":")
+    module = importlib.import_module(module_name)
+    plugin_class = getattr(module, object_type)
+
+    return plugin_class
+
+
+def read(path: str, chunk_size: int = 1024) -> typing.Optional[str]:
     if not os.path.exists(path):
         return None
 
-    # TODO: Don't use open/read, as I'm 99% sure they block.
-    reader = open(path)
-    result = ""
+    with open(path) as reader:
+        result = ""
 
-    while True:
-        data = reader.read(chunk_size)
+        while True:
+            data = reader.read(chunk_size)
 
-        if not data:
-            break
+            if not data:
+                break
 
-        result += data
+            result += data
 
-    return result
+        return result
 
 
 class FileLoader(loader.Loader):
@@ -46,38 +55,103 @@ class FileLoader(loader.Loader):
 
         # TODO: Async this!
 
-        file_paths: list[str] = []
+        exact_match = self._get_exact_match(identifier)
+        if exact_match:
+            return [exact_match]
 
+        candidates = []
+        for path in self.paths:
+            candidates.extend(self._get_candidates_for_path(path, identifier))
+        return candidates
+
+    def _get_exact_match(self, identifier: str) -> typing.Optional[str]:
         for path in self.paths:
             if not os.path.exists(path):
                 continue
-
             identifier_path = os.path.join(path, identifier)
+            if self._is_secure_path(identifier_path, path) and os.path.exists(
+                identifier_path
+            ):
+                return identifier_path
+        return None
 
-            if os.path.exists(identifier_path):
-                # Exact match always wins
-                file_paths = [identifier_path]
-                break
+    def _is_secure_path(self, full_path: str, base_path: str) -> bool:
+        return os.path.abspath(full_path).startswith(
+            os.path.abspath(base_path)
+        )
 
-            for name in os.listdir(path):
-                match_path = os.path.join(path, name)
-                if match_path.startswith(identifier_path):
-                    file_paths.append(match_path)
+    def _get_candidates_for_path(
+        self, path: str, identifier: str
+    ) -> list[str]:
+        if not os.path.exists(path):
+            return []
 
-        return file_paths
+        if self._has_extension(identifier):
+            checker = self._make_basename_secure_checker(
+                path, os.path.basename(identifier)
+            )
+            paths_iter = map(
+                lambda name: os.path.join(path, name), os.listdir(path)
+            )
+            return list(filter(checker, paths_iter))
+        else:
+            checker = self._make_secure_exists_checker(path)
+            exts = self._get_supported_extensions()
+            paths_iter = map(
+                lambda ext: os.path.join(path, identifier + ext), exts
+            )
+            return list(filter(checker, paths_iter))
+
+    def _has_extension(self, identifier: str) -> bool:
+        """Check if identifier already has a file extension."""
+        return "." in os.path.basename(identifier)
+
+    def _get_supported_extensions(self) -> list[str]:
+        formatter_identifiers = (
+            self.configuration.get("formatters") or formatters.defaults
+        )
+
+        extensions = []
+        for identifier in formatter_identifiers:
+            formatter = import_plugin(identifier)
+            for ext in formatter.extensions():
+                if ext not in extensions:
+                    extensions.append(ext)
+        return extensions
+
+    @staticmethod
+    def _make_basename_secure_checker(
+        base_path: str, target_basename: str
+    ) -> typing.Callable[[str], bool]:
+        def check(p: str) -> bool:
+            return os.path.basename(p) == target_basename and os.path.abspath(
+                p
+            ).startswith(os.path.abspath(base_path))
+
+        return check
+
+    @staticmethod
+    def _make_secure_exists_checker(
+        base_path: str,
+    ) -> typing.Callable[[str], bool]:
+        def check(p: str) -> bool:
+            return os.path.abspath(p).startswith(
+                os.path.abspath(base_path)
+            ) and os.path.exists(p)
+
+        return check
 
     async def load(self, identifier: str) -> typing.Optional[LoadResult]:
         """Load content from a configuration."""
 
         paths = await self.locate(identifier)
-        coroutines = [read(path) for path in paths]
 
-        for index in range(len(coroutines)):
-            content = await coroutines[index]
+        for path in paths:
+            content = read(path)
 
             if content:
                 return LoadResult(
-                    source=paths[index],
+                    source=path,
                     content=content,
                 )
 

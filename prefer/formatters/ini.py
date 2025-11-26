@@ -7,12 +7,15 @@ from prefer.formatters import formatter
 
 class INIFormatter(formatter.Formatter):
     @staticmethod
-    def provides(identifier: str) -> bool:
-        return identifier.endswith(".ini") or identifier.endswith(".cfg")
+    def extensions() -> set[str]:
+        return {".ini", ".cfg"}
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
         config = configparser.ConfigParser()
         for section, values in source.items():
+            if not isinstance(values, dict):
+                raise ValueError("INI sections must be dictionaries")
+
             config[section] = values
         output = io.StringIO()
         config.write(output)

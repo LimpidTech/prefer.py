@@ -8,7 +8,7 @@ async def test_Formatter_provide_raises_NotImplementedError():
     caught_exception = False
 
     try:
-        formatter.Formatter.provides(None)
+        formatter.Formatter.provides("test")
     except NotImplementedError:
         caught_exception = True
 
@@ -33,6 +33,18 @@ async def test_Formatter_deserialize_raises_NotImplementedError():
 
     try:
         await formatter.Formatter().deserialize("{}")
+    except NotImplementedError:
+        caught_exception = True
+
+    assert caught_exception
+
+
+@pytest.mark.asyncio
+async def test_Formatter_extensions_raises_NotImplementedError():
+    caught_exception = False
+
+    try:
+        formatter.Formatter.extensions()
     except NotImplementedError:
         caught_exception = True
 

@@ -1,8 +1,5 @@
 import typing
 
-if typing.TYPE_CHECKING:
-    pass
-
 
 def ensure_formatter_defines(method_name: str) -> typing.NoReturn:
     raise NotImplementedError(
@@ -17,9 +14,13 @@ class Formatter:
     ) -> None:
         self.configuration: typing.Optional[typing.Any] = configuration
 
+    @classmethod
+    def provides(cls, identifier: str) -> bool:
+        return any(identifier.endswith(ext) for ext in cls.extensions())
+
     @staticmethod
-    def provides(identifier: str) -> bool:
-        ensure_formatter_defines("provides")
+    def extensions() -> set[str]:
+        ensure_formatter_defines("extensions")
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
         ensure_formatter_defines("serialize")

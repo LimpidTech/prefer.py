@@ -11,10 +11,21 @@ from prefer.loaders import defaults as loaders
 UNSET = "unset"
 
 
+class LoadOptions(typing.TypedDict, total=False):
+    formatters: typing.Optional[
+        typing.Union[list[str], dict[str, dict[str, typing.Any]]]
+    ]
+
+    loaders: typing.Optional[
+        typing.Union[list[str], dict[str, dict[str, typing.Any]]]
+    ]
+
+
 def import_plugin(identifier: str) -> typing.Any:
     module_name, object_type = identifier.split(":")
     module = importlib.import_module(module_name)
     plugin_class = getattr(module, object_type)
+
     return plugin_class
 
 
@@ -53,32 +64,61 @@ def find_matching_plugin(
 async def load(
     identifier: str,
     *,
-    configuration: typing.Optional[dict[str, typing.Any]] = None,
+    options: typing.Optional[LoadOptions] = None,
 ) -> configuration_module.Configuration:
-    if configuration is None:
-        configuration = {}
+    if options is None:
+        options = {}
 
-    Formatter, formatter_configuration = find_matching_plugin(
-        identifier=identifier,
-        defaults=formatters.defaults,
-        plugin_list=configuration.get("formatters"),
-    )
-
-    Loader, loader_configuration = find_matching_plugin(
+    Loader, loader_options = find_matching_plugin(
         identifier=identifier,
         defaults=loaders.defaults,
-        plugin_list=configuration.get("loaders"),
+        plugin_list=options.get("loaders"),
     )
 
-    if Formatter is None or Loader is None:
-        raise ValueError(
-            f"No formatter or loader found for identifier: {identifier}"
+    if Loader is None:
+        raise ValueError(f"No loader found for identifier: {identifier}")
+
+    if loader_options is None:
+        loader_options = configuration_module.Configuration()
+
+    loader_options.set(
+        "formatters", options.get("formatters") or formatters.defaults
+    )
+    loader = Loader(configuration=loader_options)
+    loader_result = await loader.load(identifier)
+
+    if loader_result is None:
+        Formatter, _ = find_matching_plugin(
+            identifier=identifier,
+            defaults=formatters.defaults,
+            plugin_list=options.get("formatters"),
         )
 
-    formatter = Formatter(configuration=formatter_configuration)
-    loader = Loader(configuration=loader_configuration)
+        if Formatter is not None:
+            raise ValueError(f"No file found matching '{identifier}'")
 
-    loader_result = await loader.load(identifier)
+        formatter_list = options.get("formatters") or formatters.defaults
+        format_names = [
+            f.split(":")[1].replace("Formatter", "") for f in formatter_list
+        ]
+
+        raise ValueError(
+            f"No file found matching '{identifier}' with "
+            f"{', '.join(format_names)} extensions"
+        )
+
+    actual_identifier = loader_result.source
+
+    Formatter, formatter_options = find_matching_plugin(
+        identifier=actual_identifier,
+        defaults=formatters.defaults,
+        plugin_list=options.get("formatters"),
+    )
+
+    if Formatter is None:
+        raise ValueError(f"No formatter found for: {actual_identifier}")
+
+    formatter = Formatter(configuration=formatter_options)
     context = await formatter.deserialize(loader_result.content)
 
     return configuration_module.Configuration(

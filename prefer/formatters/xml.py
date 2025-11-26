@@ -8,8 +8,8 @@ from prefer.formatters import formatter
 
 class XMLFormatter(formatter.Formatter):
     @staticmethod
-    def provides(identifier: str) -> bool:
-        return identifier.endswith(".xml")
+    def extensions() -> set[str]:
+        return {".xml"}
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
         elem = xmljson.badgerfish.etree(source)

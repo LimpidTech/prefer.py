@@ -34,3 +34,15 @@ async def test_ini_formatter_serializes_to_ini():
 async def test_ini_formatter_deserializes_from_ini():
     result = await formatter.deserialize(INI_DATA)
     assert result == REAL_DATA
+
+
+@pytest.mark.asyncio
+async def test_ini_formatter_raises_error_for_non_dict_sections():
+    invalid_data = {"section": "not a dictionary"}
+
+    try:
+        await formatter.serialize(invalid_data)
+        assert False, "Should have raised ValueError"
+
+    except ValueError as e:
+        assert "INI sections must be dictionaries" in str(e)

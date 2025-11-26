@@ -44,7 +44,9 @@ def get_matching_node(
     node: typing.Any = root
 
     for key in split_by_separator(identifier):
-        print(node, key)
+        if not isinstance(node, dict):
+            raise ValueError(f"{identifier} is an unset identifier")
+
         if assign and key not in node:
             node[key] = assign()
 
@@ -138,6 +140,9 @@ class Configuration(events.Emitter):
     def __eq__(self, subject: object) -> bool:
         if subject is self:
             return True
+
+        if isinstance(subject, Configuration):
+            return subject.context == self.context
 
         return subject == self.context
 

@@ -118,3 +118,19 @@ def test_get_returns_none_for_unset_nested_identifier():
 def test_configuration_using_with_invalid_type_returns_empty():
     result = configuration.Configuration.using("invalid_string")
     assert result.context == {}
+
+
+def test_configuration_equality_between_two_configurations():
+    conf1 = configuration.Configuration(context={"test": "value"})
+    conf2 = configuration.Configuration(context={"test": "value"})
+    conf3 = configuration.Configuration(context={"test": "different"})
+
+    assert conf1 == conf2
+    assert conf1 != conf3
+
+
+def test_get_raises_for_non_dict_node_in_path():
+    subject = configuration.Configuration(context={"key": "string_value"})
+    result = subject.get("key.nested")
+
+    assert result is None

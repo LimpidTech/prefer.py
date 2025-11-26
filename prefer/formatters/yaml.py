@@ -7,8 +7,8 @@ from prefer.formatters import formatter
 
 class YAMLFormatter(formatter.Formatter):
     @staticmethod
-    def provides(identifier: str) -> bool:
-        return identifier.endswith(".yml") or identifier.endswith(".yaml")
+    def extensions() -> set[str]:
+        return {".yml", ".yaml"}
 
     async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
         result: str = yaml.dump(source)
