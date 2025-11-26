@@ -10,7 +10,7 @@ class INIFormatter(formatter.Formatter):
     def extensions() -> set[str]:
         return {".ini", ".cfg"}
 
-    async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
+    async def serialize(self, source: dict[str, typing.Any]) -> str:
         config = configparser.ConfigParser()
         for section, values in source.items():
             if not isinstance(values, dict):
@@ -21,10 +21,10 @@ class INIFormatter(formatter.Formatter):
         config.write(output)
         return output.getvalue()
 
-    async def deserialize(self, source: str) -> typing.Dict[str, typing.Any]:
+    async def deserialize(self, source: str) -> dict[str, typing.Any]:
         config = configparser.ConfigParser()
         config.read_string(source)
-        result: typing.Dict[str, typing.Any] = {
+        result: dict[str, typing.Any] = {
             section: dict(config[section]) for section in config.sections()
         }
         return result

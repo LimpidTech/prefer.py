@@ -11,13 +11,13 @@ class XMLFormatter(formatter.Formatter):
     def extensions() -> set[str]:
         return {".xml"}
 
-    async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
+    async def serialize(self, source: dict[str, typing.Any]) -> str:
         elem = xmljson.badgerfish.etree(source)
         if isinstance(elem, list):
             elem = elem[0]
         return ET.tostring(elem, encoding="unicode")
 
-    async def deserialize(self, source: str) -> typing.Dict[str, typing.Any]:
+    async def deserialize(self, source: str) -> dict[str, typing.Any]:
         elem = ET.fromstring(source)
-        result: typing.Dict[str, typing.Any] = xmljson.badgerfish.data(elem)
+        result: dict[str, typing.Any] = xmljson.badgerfish.data(elem)
         return result

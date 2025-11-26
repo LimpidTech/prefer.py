@@ -12,13 +12,13 @@ UNSET = "unset"
 
 
 class LoadOptions(typing.TypedDict, total=False):
-    formatters: typing.Optional[
-        typing.Union[list[str], dict[str, dict[str, typing.Any]]]
-    ]
+    formatters: None | (
+        list[str] | dict[str, dict[str, typing.Any]]
+    )
 
-    loaders: typing.Optional[
-        typing.Union[list[str], dict[str, dict[str, typing.Any]]]
-    ]
+    loaders: None | (
+        list[str] | dict[str, dict[str, typing.Any]]
+    )
 
 
 def import_plugin(identifier: str) -> typing.Any:
@@ -31,16 +31,16 @@ def import_plugin(identifier: str) -> typing.Any:
 
 def find_matching_plugin(
     identifier: str,
-    plugin_list: typing.Optional[
-        typing.Union[list[str], dict[str, dict[str, typing.Any]]]
-    ],
+    plugin_list: None | (
+        list[str] | dict[str, dict[str, typing.Any]]
+    ),
     defaults: list[str],
 ) -> tuple[
-    typing.Optional[typing.Any],
-    typing.Optional[configuration_module.Configuration],
+    typing.Any | None,
+    configuration_module.Configuration | None,
 ]:
-    Plugin: typing.Optional[typing.Any] = None
-    configuration: typing.Optional[configuration_module.Configuration] = None
+    Plugin: typing.Any | None = None
+    configuration: configuration_module.Configuration | None = None
 
     if plugin_list is None:
         plugin_list = defaults
@@ -64,7 +64,7 @@ def find_matching_plugin(
 async def load(
     identifier: str,
     *,
-    options: typing.Optional[LoadOptions] = None,
+    options: LoadOptions | None = None,
 ) -> configuration_module.Configuration:
     if options is None:
         options = {}

@@ -25,7 +25,7 @@ def with_bin_path(path: str) -> str:
     return os.path.join(path, get_bin_name())
 
 
-def get_xdg_config_path() -> typing.Optional[str]:
+def get_xdg_config_path() -> str | None:
     xdg_config_path = os.environ.get("XDG_CONFIG_PATH")
 
     if xdg_config_path:
@@ -39,11 +39,11 @@ def get_xdg_config_path() -> typing.Optional[str]:
     return os.path.join(home_dir, ".config")
 
 
-def get_posix_paths() -> list[typing.Optional[str]]:
+def get_posix_paths() -> list[str | None]:
     xdg_path = get_xdg_config_path()
     home = os.environ.get("HOME")
 
-    paths: list[typing.Optional[str]] = [xdg_path]
+    paths: list[str | None] = [xdg_path]
 
     if xdg_path:
         paths.append(os.path.join(xdg_path, get_bin_name()))
@@ -62,7 +62,7 @@ def get_posix_paths() -> list[typing.Optional[str]]:
     return paths
 
 
-def get_windows_paths() -> list[typing.Optional[str]]:
+def get_windows_paths() -> list[str | None]:
     env_vars = [
         os.environ.get("USERPROFILE"),
         os.environ.get("LOCALPROFILE"),
@@ -76,7 +76,7 @@ def get_windows_paths() -> list[typing.Optional[str]]:
     user_paths = [with_bin_path(path) for path in env_vars if path]
 
     system_root = os.environ.get("SystemRoot")
-    system_paths: list[typing.Optional[str]] = []
+    system_paths: list[str | None] = []
     if system_root:
         system_paths = [
             os.path.join(system_root, "system"),
@@ -87,7 +87,7 @@ def get_windows_paths() -> list[typing.Optional[str]]:
 
 
 SYSTEM_PATH_FACTORIES: dict[
-    str, typing.Callable[[], list[typing.Optional[str]]]
+    str, typing.Callable[[], list[str | None]]
 ] = {
     "posix": get_posix_paths,
     "win32": get_windows_paths,
@@ -98,7 +98,7 @@ def get_base_paths() -> list[str]:
     return [etc_path(os.getcwd()), os.getcwd()]
 
 
-def ensure_unique(paths: list[typing.Optional[str]]) -> list[str]:
+def ensure_unique(paths: list[str | None]) -> list[str]:
     results: list[str] = []
     found_paths: set[str] = set()
 
@@ -113,7 +113,7 @@ def ensure_unique(paths: list[typing.Optional[str]]) -> list[str]:
 
 
 def get_system_paths(system: str = os.name) -> list[str]:
-    paths_list: list[typing.Optional[str]] = list(get_base_paths())
+    paths_list: list[str | None] = list(get_base_paths())
     path_factory = SYSTEM_PATH_FACTORIES.get(system)
 
     if path_factory is not None:

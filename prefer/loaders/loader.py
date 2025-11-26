@@ -6,7 +6,7 @@ from prefer import configuration as configuration_module
 from prefer import events, pathing
 
 LoaderConfigurationType = typing.Union[
-    typing.Dict[str, typing.Any],
+    dict[str, typing.Any],
     configuration_module.Configuration,
 ]
 
@@ -18,13 +18,13 @@ class Loader(events.Emitter):
     def __init__(
         self,
         *,
-        configuration: typing.Optional[LoaderConfigurationType] = None,
+        configuration: LoaderConfigurationType | None = None,
     ) -> None:
         self.configuration = configuration_module.Configuration.using(
             configuration
         )
 
-        paths: typing.Optional[list[str]] = self.configuration.get("paths")
+        paths: list[str] | None = self.configuration.get("paths")
 
         if paths is None:
             paths = pathing.get_system_paths()

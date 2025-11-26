@@ -10,10 +10,10 @@ class JSONFormatter(formatter.Formatter):
     def extensions() -> set[str]:
         return {".json", ".json5"}
 
-    async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
+    async def serialize(self, source: dict[str, typing.Any]) -> str:
         result: str = json5.dumps(source, quote_keys=True)
         return result
 
-    async def deserialize(self, source: str) -> typing.Dict[str, typing.Any]:
-        result: typing.Dict[str, typing.Any] = json5.loads(source)
+    async def deserialize(self, source: str) -> dict[str, typing.Any]:
+        result: dict[str, typing.Any] = json5.loads(source)
         return result

@@ -37,9 +37,9 @@ def split_by_separator(identifier: str) -> typing.Iterator[str]:
 
 
 def get_matching_node(
-    root: typing.Dict[str, typing.Any],
+    root: dict[str, typing.Any],
     identifier: str,
-    assign: typing.Optional[typing.Callable[[], typing.Any]] = None,
+    assign: typing.Callable[[], typing.Any] | None = None,
 ) -> typing.Any:
     node: typing.Any = root
 
@@ -59,17 +59,17 @@ def get_matching_node(
 
 
 class Configuration(events.Emitter):
-    context: typing.Dict[str, typing.Any]
-    formatter: typing.Optional[typing.Any]
-    loader: typing.Optional[typing.Any]
+    context: dict[str, typing.Any]
+    formatter: typing.Any | None
+    loader: typing.Any | None
 
     @classmethod
     def using(
         cls,
-        data: typing.Optional[
-            typing.Union["Configuration", typing.Dict[str, typing.Any]]
-        ],
-    ) -> "Configuration":
+        data: None | (
+            Configuration | dict[str, typing.Any]
+        ),
+    ) -> Configuration:
         if data is None:
             return cls()
 
@@ -84,9 +84,9 @@ class Configuration(events.Emitter):
     def __init__(
         self,
         *,
-        context: typing.Optional[typing.Dict[str, typing.Any]] = None,
-        formatter: typing.Optional[typing.Any] = None,
-        loader: typing.Optional[typing.Any] = None,
+        context: dict[str, typing.Any] | None = None,
+        formatter: typing.Any | None = None,
+        loader: typing.Any | None = None,
         **kwargs: typing.Any,
     ) -> None:
         super().__init__()

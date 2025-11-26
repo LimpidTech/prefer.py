@@ -10,9 +10,9 @@ def ensure_formatter_defines(method_name: str) -> typing.NoReturn:
 
 class Formatter:
     def __init__(
-        self, configuration: typing.Optional[typing.Any] = None
+        self, configuration: typing.Any | None = None
     ) -> None:
-        self.configuration: typing.Optional[typing.Any] = configuration
+        self.configuration: typing.Any | None = configuration
 
     @classmethod
     def provides(cls, identifier: str) -> bool:
@@ -22,8 +22,8 @@ class Formatter:
     def extensions() -> set[str]:
         ensure_formatter_defines("extensions")
 
-    async def serialize(self, source: typing.Dict[str, typing.Any]) -> str:
+    async def serialize(self, source: dict[str, typing.Any]) -> str:
         ensure_formatter_defines("serialize")
 
-    async def deserialize(self, source: str) -> typing.Dict[str, typing.Any]:
+    async def deserialize(self, source: str) -> dict[str, typing.Any]:
         ensure_formatter_defines("deserialize")

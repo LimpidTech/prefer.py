@@ -26,7 +26,7 @@ def import_plugin(identifier: str) -> typing.Any:
     return plugin_class
 
 
-def read(path: str, chunk_size: int = 1024) -> typing.Optional[str]:
+def read(path: str, chunk_size: int = 1024) -> str | None:
     if not os.path.exists(path):
         return None
 
@@ -64,7 +64,7 @@ class FileLoader(loader.Loader):
             candidates.extend(self._get_candidates_for_path(path, identifier))
         return candidates
 
-    def _get_exact_match(self, identifier: str) -> typing.Optional[str]:
+    def _get_exact_match(self, identifier: str) -> str | None:
         for path in self.paths:
             if not os.path.exists(path):
                 continue
@@ -141,7 +141,7 @@ class FileLoader(loader.Loader):
 
         return check
 
-    async def load(self, identifier: str) -> typing.Optional[LoadResult]:
+    async def load(self, identifier: str) -> LoadResult | None:
         """Load content from a configuration."""
 
         paths = await self.locate(identifier)
