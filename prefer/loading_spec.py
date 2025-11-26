@@ -132,7 +132,7 @@ async def test_load_prefers_json_over_other_formats():
         )
 
         assert configurator.context["format"] == "json"
-        assert configurator.context["preferred"] == True
+        assert configurator.context["preferred"]
 
 
 @pytest.mark.asyncio
@@ -190,7 +190,10 @@ async def test_load_with_different_extensions():
             )
 
             assert configurator.context is not None
-            assert "type" in str(configurator.context) or "type" in configurator.context
+            assert (
+                "type" in str(configurator.context)
+                or "type" in configurator.context
+            )
 
 
 @pytest.mark.asyncio
@@ -217,7 +220,7 @@ async def test_load_with_nested_paths():
             },
         )
 
-        assert configurator.context["nested"] == True
+        assert configurator.context["nested"]
         assert configurator.context["path"] == "deep"
 
 

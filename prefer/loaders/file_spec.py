@@ -120,17 +120,17 @@ async def test_loader_has_extension_detection():
     """Test the _has_extension helper method."""
     loader = file_loader.FileLoader()
 
-    assert loader._has_extension("test.json") == True
-    assert loader._has_extension("config.xml") == True
-    assert loader._has_extension("settings.ini") == True
+    assert loader._has_extension("test.json")
+    assert loader._has_extension("config.xml")
+    assert loader._has_extension("settings.ini")
 
-    assert loader._has_extension("test") == False
-    assert loader._has_extension("config") == False
-    assert loader._has_extension("settings") == False
+    assert not loader._has_extension("test")
+    assert not loader._has_extension("config")
+    assert not loader._has_extension("settings")
 
-    assert loader._has_extension(".hidden") == True
-    assert loader._has_extension("path/to/file.json") == True
-    assert loader._has_extension("path/to/file") == False
+    assert loader._has_extension(".hidden")
+    assert loader._has_extension("path/to/file.json")
+    assert not loader._has_extension("path/to/file")
 
 
 @pytest.mark.asyncio
