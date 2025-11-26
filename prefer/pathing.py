@@ -86,9 +86,7 @@ def get_windows_paths() -> list[str | None]:
     return user_paths + system_paths
 
 
-SYSTEM_PATH_FACTORIES: dict[
-    str, typing.Callable[[], list[str | None]]
-] = {
+SYSTEM_PATH_FACTORIES: dict[str, typing.Callable[[], list[str | None]]] = {
     "posix": get_posix_paths,
     "win32": get_windows_paths,
 }

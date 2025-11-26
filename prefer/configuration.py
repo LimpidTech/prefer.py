@@ -66,9 +66,7 @@ class Configuration(events.Emitter):
     @classmethod
     def using(
         cls,
-        data: None | (
-            Configuration | dict[str, typing.Any]
-        ),
+        data: None | (Configuration | dict[str, typing.Any]),
     ) -> Configuration:
         if data is None:
             return cls()

@@ -9,9 +9,7 @@ def ensure_formatter_defines(method_name: str) -> typing.NoReturn:
 
 
 class Formatter:
-    def __init__(
-        self, configuration: typing.Any | None = None
-    ) -> None:
+    def __init__(self, configuration: typing.Any | None = None) -> None:
         self.configuration: typing.Any | None = configuration
 
     @classmethod

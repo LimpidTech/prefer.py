@@ -12,13 +12,9 @@ UNSET = "unset"
 
 
 class LoadOptions(typing.TypedDict, total=False):
-    formatters: None | (
-        list[str] | dict[str, dict[str, typing.Any]]
-    )
+    formatters: None | (list[str] | dict[str, dict[str, typing.Any]])
 
-    loaders: None | (
-        list[str] | dict[str, dict[str, typing.Any]]
-    )
+    loaders: None | (list[str] | dict[str, dict[str, typing.Any]])
 
 
 def import_plugin(identifier: str) -> typing.Any:
@@ -31,9 +27,7 @@ def import_plugin(identifier: str) -> typing.Any:
 
 def find_matching_plugin(
     identifier: str,
-    plugin_list: None | (
-        list[str] | dict[str, dict[str, typing.Any]]
-    ),
+    plugin_list: None | (list[str] | dict[str, dict[str, typing.Any]]),
     defaults: list[str],
 ) -> tuple[
     typing.Any | None,
