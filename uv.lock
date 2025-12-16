@@ -287,6 +287,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "tomli-w" },
+    { name = "watchdog" },
     { name = "xmljson" },
 ]
 
@@ -322,6 +323,7 @@ requires-dist = [
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.0" },
     { name = "tomli-w", specifier = ">=1.0.0" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0" },
+    { name = "watchdog", specifier = ">=4.0.0" },
     { name = "xmljson", specifier = ">=0.2.0" },
 ]
 provides-extras = ["dev"]
