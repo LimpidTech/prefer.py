@@ -109,39 +109,31 @@ class EnvSource(Source):
 
     Environment variables are mapped to configuration keys by:
     1. Stripping the prefix (if provided)
-    2. Converting to lowercase
-    3. Replacing double underscores with dots for nesting
+    2. Splitting by separator (default "__") to create nested structure
+    3. Converting to lowercase
 
     Example:
         With prefix="MYAPP":
-        - MYAPP_DATABASE_HOST -> database.host
-        - MYAPP_LOG__LEVEL -> log.level (double underscore for explicit dot)
+        - MYAPP__DATABASE__HOST -> database.host
+        - MYAPP__PORT -> port
     """
 
     def __init__(
         self,
         prefix: str | None = None,
         *,
-        separator: str = "_",
-        nesting_separator: str = "__",
+        separator: str = "__",
     ) -> None:
         self._prefix = prefix.upper() + separator if prefix else ""
         self._separator = separator
-        self._nesting_separator = nesting_separator
 
     def _parse_key(self, env_key: str) -> list[str]:
         """Parse an environment variable key into config path parts."""
         # Remove prefix
         key = env_key[len(self._prefix) :]
 
-        # Replace nesting separator with a placeholder
-        key = key.replace(self._nesting_separator, "\x00")
-
         # Split by separator and convert to lowercase
-        parts = [p.lower() for p in key.split(self._separator)]
-
-        # Restore dots from placeholder
-        return [p.replace("\x00", ".") for p in parts]
+        return [p.lower() for p in key.split(self._separator)]
 
     def _set_nested(
         self,
@@ -271,21 +263,19 @@ class ConfigBuilder:
         self,
         prefix: str,
         *,
-        separator: str = "_",
-        nesting_separator: str = "__",
+        separator: str = "__",
     ) -> ConfigBuilder:
         """Add environment variables as a configuration source.
 
         Args:
             prefix: The environment variable prefix (e.g., "MYAPP").
-            separator: Separator between key parts (default "_").
-            nesting_separator: Separator for explicit nesting (default "__").
+            separator: Separator between key parts (default "__").
 
         Returns:
             Self for chaining.
         """
         self._sources.append(
-            EnvSource(prefix, separator=separator, nesting_separator=nesting_separator)
+            EnvSource(prefix, separator=separator)
         )
         return self
 

@@ -166,9 +166,9 @@ class TestEnvSource:
         with mock.patch.dict(
             os.environ,
             {
-                "MYAPP_DATABASE_HOST": "localhost",
-                "MYAPP_DATABASE_PORT": "5432",
-                "OTHER_VAR": "ignored",
+                "MYAPP__DATABASE__HOST": "localhost",
+                "MYAPP__DATABASE__PORT": "5432",
+                "OTHER__VAR": "ignored",
             },
             clear=True,
         ):
@@ -183,24 +183,24 @@ class TestEnvSource:
             }
 
     @pytest.mark.asyncio
-    async def test_load_with_nesting_separator(self) -> None:
-        """Test loading environment variables with explicit nesting."""
+    async def test_load_with_custom_separator(self) -> None:
+        """Test loading environment variables with a custom separator."""
         with mock.patch.dict(
             os.environ,
-            {"MYAPP_LOG__LEVEL": "debug"},
+            {"MYAPP-DATABASE-HOST": "localhost"},
             clear=True,
         ):
-            source = EnvSource("MYAPP")
+            source = EnvSource("MYAPP", separator="-")
             result = await source.load()
 
-            assert result == {"log.level": "debug"}
+            assert result == {"database": {"host": "localhost"}}
 
     @pytest.mark.asyncio
     async def test_load_without_prefix_returns_empty(self) -> None:
         """Test that loading without prefix returns empty dict."""
         with mock.patch.dict(
             os.environ,
-            {"SOME_VAR": "value"},
+            {"SOME__VAR": "value"},
             clear=True,
         ):
             source = EnvSource(None)
@@ -213,7 +213,7 @@ class TestEnvSource:
         """Test that prefix matching is case-insensitive."""
         with mock.patch.dict(
             os.environ,
-            {"MYAPP_KEY": "value"},
+            {"MYAPP__KEY": "value"},
             clear=True,
         ):
             source = EnvSource("myapp")
@@ -303,7 +303,7 @@ class TestConfigBuilder:
     @pytest.mark.asyncio
     async def test_add_env(self) -> None:
         """Test adding environment variable source."""
-        with mock.patch.dict(os.environ, {"MYAPP_KEY": "from_env"}, clear=True):
+        with mock.patch.dict(os.environ, {"MYAPP__KEY": "from_env"}, clear=True):
             config = await ConfigBuilder().add_env("MYAPP").build()
 
             assert config.get("key") == "from_env"
@@ -317,7 +317,7 @@ class TestConfigBuilder:
             with open(config_path, "w") as f:
                 json.dump({"key": "from_file", "other": "file_value"}, f)
 
-            with mock.patch.dict(os.environ, {"MYAPP_KEY": "from_env"}, clear=True):
+            with mock.patch.dict(os.environ, {"MYAPP__KEY": "from_env"}, clear=True):
                 config = await (
                     ConfigBuilder()
                     .with_options(
@@ -343,7 +343,7 @@ class TestConfigBuilder:
         """Test deep merge behavior with nested values."""
         with mock.patch.dict(
             os.environ,
-            {"MYAPP_DATABASE_PASSWORD": "secret"},
+            {"MYAPP__DATABASE__PASSWORD": "secret"},
             clear=True,
         ):
             config = await (
@@ -414,8 +414,8 @@ class TestConfigBuilder:
             await builder.build()
 
     @pytest.mark.asyncio
-    async def test_add_env_with_custom_separators(self) -> None:
-        """Test environment source with custom separators."""
+    async def test_add_env_with_custom_separator(self) -> None:
+        """Test environment source with custom separator."""
         with mock.patch.dict(
             os.environ,
             {"MYAPP-DATABASE-HOST": "localhost"},
